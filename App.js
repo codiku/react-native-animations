@@ -15,7 +15,7 @@ export default function App() {
   // 2 Run the animation
   useEffect(() => {
     animSquareX.value = withTiming(W - SQUARE_SIZE, { duration: 2000 });
-    animSquareOpacity.value = withTiming(0, { duration: 2000 }, () => {
+    animSquareOpacity.value = withTiming(0, { duration: 4000 }, () => {
       animSquareX.value = withTiming(0, { duration: 2000 });
       animSquareOpacity.value = withTiming(1, { duration: 2000 });
     });
