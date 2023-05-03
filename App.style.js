@@ -1,11 +1,13 @@
 import { StyleSheet } from "react-native";
 
-const s = StyleSheet.create({
+export const s = StyleSheet.create({
+  root: {
+    flex: 1,
+    justifyContent: "center",
+  },
   square: {
-    backgroundColor: "orange",
     height: 100,
     width: 100,
+    backgroundColor: "orange",
   },
 });
-
-export { s };
