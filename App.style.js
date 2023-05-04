@@ -6,7 +6,6 @@ export const s = StyleSheet.create({
   root: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   square: {
     borderRadius: 15,
