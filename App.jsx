@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
@@ -7,46 +7,53 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
-import { s } from "./App.style";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
-LogBox.ignoreLogs(["No native splash"]);
+import { s, CIRCLE_RADIUS } from "./App.style";
 
 export default function App() {
-  const squareAnimTranslateX = useSharedValue(0);
-  const squareAnimTranslateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
-      ctx.initialXPos = squareAnimTranslateX.value;
-      ctx.initialYPos = squareAnimTranslateY.value;
+      ctx.initialPosX = translateX.value;
+      ctx.initialPosY = translateY.value;
     },
-    onActive: (e, ctx) => {
-      squareAnimTranslateX.value = ctx.initialXPos + e.translationX;
-      squareAnimTranslateY.value = ctx.initialYPos + e.translationY;
+    onActive: (event, ctx) => {
+      translateX.value = ctx.initialPosX + event.translationX;
+      translateY.value = ctx.initialPosY + event.translationY;
     },
-    onEnd: () => {
-      console.log("onEnd");
+    onEnd: (_) => {
+      const distance = Math.sqrt(translateX.value ** 2 + translateY.value ** 2);
+      console.log("***", "end", distance, CIRCLE_RADIUS);
+      if (distance < CIRCLE_RADIUS) {
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+      }
     },
   });
 
-  const squareAnimatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: squareAnimTranslateX.value },
-        { translateY: squareAnimTranslateY.value },
+        {
+          translateX: translateX.value,
+        },
+        {
+          translateY: translateY.value,
+        },
       ],
     };
   });
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={s.root}>
-        <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View style={[s.square, squareAnimatedStyle]} />
-        </PanGestureHandler>
+        <View style={s.circle}>
+          <PanGestureHandler onGestureEvent={gestureHandler}>
+            <Animated.View style={[s.square, animatedStyle]} />
+          </PanGestureHandler>
+        </View>
       </View>
     </GestureHandlerRootView>
   );
