@@ -9,9 +9,8 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
-import { s, CIRCLE_RADIUS, SQUARE_SIZE } from "./App.style";
+import { s, SQUARE_SIZE } from "./App.style";
 
 LogBox.ignoreLogs(["No native splash"]);
 
