@@ -1,25 +1,46 @@
 import { StyleSheet } from "react-native";
-export const SQUARE_SIZE = 100;
-export const CIRCLE_PERIMETER = 350;
-export const CIRCLE_RADIUS = CIRCLE_PERIMETER / 2;
+export const IMG_SIZE = {
+  MAX: 350,
+  MIN: 150,
+};
+export const TITLE_FONT_SIZE = {
+  MAX: 25,
+  MIN: 0,
+};
+
 export const s = StyleSheet.create({
-  root: {
+  container: {
     flex: 1,
-    justifyContent: "center",
   },
-  square: {
-    borderRadius: 15,
-    backgroundColor: "orange",
-    height: SQUARE_SIZE,
-    width: SQUARE_SIZE,
+  listItem: {
+    flex: 1,
   },
-  circle: {
-    borderWidth: 5,
-    borderColor: "orange",
-    height: CIRCLE_PERIMETER,
-    width: CIRCLE_PERIMETER,
-    borderRadius: CIRCLE_RADIUS,
-    justifyContent: "center",
+  image: {
+    width: "100%",
+    height: IMG_SIZE.MAX,
+  },
+  backdrop: {
+    backgroundColor: "#1b191987",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    padding: 10,
+  },
+  textContainer: {
+    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+  },
+
+  title: {
+    textAlign: "center",
+    fontSize: TITLE_FONT_SIZE.MIN,
+    color: "white",
+    fontWeight: "bold",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "white",
   },
 });

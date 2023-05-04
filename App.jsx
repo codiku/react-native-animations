@@ -1,72 +1,87 @@
-import { Dimensions, LogBox, View } from "react-native";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
+import { Dimensions, Text, Touchable, View } from "react-native";
 import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  useAnimatedScrollHandler,
+  interpolate,
+  Extrapolate,
 } from "react-native-reanimated";
-import { s, CIRCLE_RADIUS, SQUARE_SIZE } from "./App.style";
+import { s, IMG_SIZE, TITLE_FONT_SIZE } from "./App.style.js";
+import { IMAGES } from "./constant";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-LogBox.ignoreLogs(["No native splash"]);
+const H = Dimensions.get("screen").height;
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("screen");
 export default function App() {
-  const squareAnimTranslateX = useSharedValue(0);
-  const squareAnimTranslateY = useSharedValue(0);
+  const yDistance = useSharedValue(0);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, ctx) => {
-      ctx.initialPosX = squareAnimTranslateX.value;
-      ctx.initialPosY = squareAnimTranslateY.value;
-    },
-    onActive: (e, ctx) => {
-      squareAnimTranslateX.value = ctx.initialPosX + e.translationX;
-      squareAnimTranslateY.value = ctx.initialPosY + e.translationY;
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      yDistance.value = e.contentOffset.y;
     },
   });
 
-  const squareAnimStyle = useAnimatedStyle(() => {
-    console.log(SCREEN_W / 2);
-    const scale = interpolate(
-      squareAnimTranslateX.value,
-      [0, SCREEN_W / 2 - SQUARE_SIZE / 2],
-      [1, 3],
-      Extrapolate.CLAMP
-    );
-    const opacity = interpolate(
-      squareAnimTranslateX.value,
-      [0, SCREEN_W / 2 - SQUARE_SIZE / 2],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
-    return {
-      transform: [
-        {
-          translateX: squareAnimTranslateX.value,
-        },
-        {
-          translateY: squareAnimTranslateY.value,
-        },
-        {
-          scale,
-        },
-      ],
-      opacity,
-    };
-  });
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={s.root}>
-        <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View style={[s.square, squareAnimStyle]} />
-        </PanGestureHandler>
-      </View>
-    </GestureHandlerRootView>
+    <Animated.ScrollView
+      snapToInterval={IMG_SIZE.MAX}
+      scrollEventThrottle={16}
+      onScroll={scrollHandler}
+      style={[s.container]}
+      contentContainerStyle={{
+        height: IMG_SIZE.MAX * IMAGES.length + (H - IMG_SIZE.MAX),
+      }}
+    >
+      {IMAGES.map((item, i) => (
+        <ListItem item={item} key={item.title} i={i} yDistance={yDistance} />
+      ))}
+    </Animated.ScrollView>
   );
 }
+
+const ListItem = ({ item, yDistance, i }) => {
+  const imgAnimStyle = useAnimatedStyle(() => {
+    return {
+      height: interpolate(
+        yDistance.value,
+        [i * IMG_SIZE.MAX, i * IMG_SIZE.MAX - IMG_SIZE.MAX],
+        [IMG_SIZE.MAX, IMG_SIZE.MIN],
+        Extrapolate.CLAMP
+      ),
+    };
+  });
+
+  const titleAnimStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        yDistance.value,
+        [i * IMG_SIZE.MAX, i * IMG_SIZE.MAX - IMG_SIZE.MAX],
+        [1, 0],
+        Extrapolate.CLAMP
+      ),
+      fontSize: interpolate(
+        yDistance.value,
+        [i * IMG_SIZE.MAX, i * IMG_SIZE.MAX - IMG_SIZE.MAX],
+        [TITLE_FONT_SIZE.MAX, 0],
+        Extrapolate.CLAMP
+      ),
+    };
+  });
+
+  return (
+    <TouchableOpacity onPress={() => alert("You clicked :)")}>
+      <Animated.Image
+        resizeMode="cover"
+        style={[s.image, imgAnimStyle]}
+        source={item.picture}
+      />
+      <View style={[s.backdrop]}>
+        <View style={s.textContainer}>
+          <Text style={[s.subtitle]}>{item.subtitle}</Text>
+          <Animated.Text style={[s.title, titleAnimStyle]}>
+            {item.title}
+          </Animated.Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
