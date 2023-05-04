@@ -1,21 +1,18 @@
-import { Dimensions, LogBox, View } from "react-native";
+import { LogBox, View } from "react-native";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
 } from "react-native-gesture-handler";
 import Animated, {
-  Extrapolate,
-  interpolate,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import { s, CIRCLE_RADIUS, SQUARE_SIZE } from "./App.style";
+import { s, CIRCLE_RADIUS } from "./App.style";
 
 LogBox.ignoreLogs(["No native splash"]);
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("screen");
 export default function App() {
   const squareAnimTranslateX = useSharedValue(0);
   const squareAnimTranslateY = useSharedValue(0);
@@ -29,22 +26,19 @@ export default function App() {
       squareAnimTranslateX.value = ctx.initialPosX + e.translationX;
       squareAnimTranslateY.value = ctx.initialPosY + e.translationY;
     },
+    onEnd: (e, ctx) => {
+      console.log("onEnd");
+      const distanceFromCenter = Math.sqrt(
+        squareAnimTranslateX.value ** 2 + squareAnimTranslateY.value ** 2
+      );
+      if (distanceFromCenter < CIRCLE_RADIUS) {
+        squareAnimTranslateX.value = withSpring(0);
+        squareAnimTranslateY.value = withSpring(0);
+      }
+    },
   });
 
   const squareAnimStyle = useAnimatedStyle(() => {
-    console.log(SCREEN_W / 2);
-    const scale = interpolate(
-      squareAnimTranslateX.value,
-      [0, SCREEN_W / 2 - SQUARE_SIZE / 2],
-      [1, 3],
-      Extrapolate.CLAMP
-    );
-    const opacity = interpolate(
-      squareAnimTranslateX.value,
-      [0, SCREEN_W / 2 - SQUARE_SIZE / 2],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
     return {
       transform: [
         {
@@ -53,19 +47,17 @@ export default function App() {
         {
           translateY: squareAnimTranslateY.value,
         },
-        {
-          scale,
-        },
       ],
-      opacity,
     };
   });
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={s.root}>
-        <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View style={[s.square, squareAnimStyle]} />
-        </PanGestureHandler>
+        <View style={s.circle}>
+          <PanGestureHandler onGestureEvent={gestureHandler}>
+            <Animated.View style={[s.square, squareAnimStyle]} />
+          </PanGestureHandler>
+        </View>
       </View>
     </GestureHandlerRootView>
   );
