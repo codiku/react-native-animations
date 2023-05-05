@@ -1,5 +1,5 @@
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { IMAGE_SIZE, s } from "./ListItem.style";
+import { IMAGE_SIZE, TITLE_FONT_SIZE, s } from "./ListItem.style";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -19,13 +19,35 @@ export function ListItem({ image, scrollY, index }) {
       height,
     };
   });
-
+  const textAnimStyle = useAnimatedStyle(() => {
+    const fontSize = interpolate(
+      scrollY.value,
+      [index * IMAGE_SIZE.MAX, index * IMAGE_SIZE.MAX - IMAGE_SIZE.MAX],
+      [TITLE_FONT_SIZE.MAX, TITLE_FONT_SIZE.MIN],
+      Extrapolate.CLAMP
+    );
+    const opacity = interpolate(
+      scrollY.value,
+      [
+        index * IMAGE_SIZE.MAX,
+        index * IMAGE_SIZE.MAX - IMAGE_SIZE.MAX + IMAGE_SIZE.MAX / 2,
+      ],
+      [1, 0],
+      Extrapolate.CLAMP
+    );
+    return {
+      fontSize,
+      opacity,
+    };
+  });
   return (
     <TouchableOpacity onPress={() => alert("You clicked !")}>
       <Animated.Image source={image.picture} style={[s.image, imgAnimStyle]} />
       <View style={s.textContainer}>
         <Text style={s.subtitle}>{image.subtitle}</Text>
-        <Text style={s.title}>{image.title}</Text>
+        <Animated.Text style={[s.title, textAnimStyle]}>
+          {image.title}
+        </Animated.Text>
       </View>
     </TouchableOpacity>
   );

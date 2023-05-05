@@ -1,7 +1,12 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 export const IMAGE_SIZE = {
   MAX: 300,
   MIN: 100,
+};
+
+export const TITLE_FONT_SIZE = {
+  MAX: 30,
+  MIN: 0.41,
 };
 
 export const s = StyleSheet.create({
@@ -20,7 +25,7 @@ export const s = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    fontSize: 0,
+    fontSize: TITLE_FONT_SIZE.MIN,
     color: "white",
   },
   subtitle: {
