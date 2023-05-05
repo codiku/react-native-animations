@@ -2,14 +2,27 @@ import { ScrollView } from "react-native-gesture-handler";
 import { s } from "./List.style";
 import { IMAGES } from "../../constant";
 import { ListItem } from "../ListItem/ListItem";
-import { useSharedValue } from "react-native-reanimated";
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from "react-native-reanimated";
 export function List() {
-  const yDistance = useSharedValue(0);
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollY.value = e.contentOffset.y;
+    },
+  });
   return (
-    <ScrollView>
+    <Animated.ScrollView scrollEventThrottle={16} onScroll={scrollHandler}>
       {IMAGES.map((image, i) => (
-        <ListItem image={image} key={image.title + i} yDistance={yDistance} />
+        <ListItem
+          image={image}
+          key={image.title + i}
+          scrollY={scrollY}
+          index={i}
+        />
       ))}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-const IMAGE_SIZE = {
+export const IMAGE_SIZE = {
   MAX: 300,
   MIN: 100,
 };
