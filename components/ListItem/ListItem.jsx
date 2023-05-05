@@ -4,6 +4,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
+
 export function ListItem({ image, scrollY, index }) {
   const imgAnimStyle = useAnimatedStyle(() => {
     const height = interpolate(
