@@ -9,11 +9,6 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { s } from "./App.style";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
-LogBox.ignoreLogs(["No native splash"]);
 
 export default function App() {
   const squareAnimTranslateX = useSharedValue(0);
